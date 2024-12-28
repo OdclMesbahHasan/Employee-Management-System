@@ -49,4 +49,44 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
     }
+
+    @Override
+    public EmployeeDto updateEmployee(EmployeeDto employeeDto, Long employeeId) {
+        Employee employee = null;
+        EmployeeDto savedEmployeeDto = null;
+        try {
+            employee = employeeRepository.findById(employeeId).orElseThrow(()->new ResourceNotFoundException("Employee with this Id: "+ employeeId+ " not found"));
+            employee.setFirstName(employeeDto.getFirstName());
+            employee.setLastName(employeeDto.getLastName());
+            employee.setEmail(employeeDto.getEmail());
+
+            employeeRepository.save(employee);
+            savedEmployeeDto = EmployeeMapper.mapToEmployeeDto(employee);
+            return savedEmployeeDto;
+        }
+        catch (Exception e) {
+            throw new ResourceNotFoundException("Exception thrown to catch block: " + e.getMessage());
+        }
+        finally {
+            employee = null;
+            savedEmployeeDto = null;
+        }
+    }
+
+    @Override
+    public void deleteEmployee(Long employeeId) {
+        Employee employee = null;
+        try {
+            employee = employeeRepository.findById(employeeId).orElseThrow(()-> new ResourceNotFoundException("Employee with this Id: "+ employeeId+ " not found, thus couldn't delete"));
+            employeeRepository.deleteById(employeeId);
+
+        }
+        catch (Exception e) {
+            throw new ResourceNotFoundException("Exception thrown to catch block: " + e.getMessage());
+        }
+        finally {
+            employee = null;
+        }
+
+    }
 }
